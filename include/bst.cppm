@@ -12,40 +12,7 @@ namespace forest {
             };
 
         public:
-            struct Iterator {
-                private:
-                    LinkedBinarySearchTreeNode* _curr;
-                    std::stack<LinkedBinarySearchTreeNode*> _st;
-
-                public:
-                    using difference_type = std::ptrdiff_t;
-                    using value_type = T;
-
-                    Iterator() {
-                        _st.push(_curr);
-                    }
-
-                    T operator*() const {
-                        return _curr->_value;
-                    }
-
-                    Iterator& operator++() {
-                        if (_st.empty())
-                            throw "Cannot traverse further.";
-
-                        auto* curr = _st.top(); _st.pop();
-                        if(curr_right) {
-                            while (curr) {
-                                _st.push(curr);
-                                curr = curr->left;
-                            }
-                        }
-                        
-                        _curr = curr;
-                        return *this;
-                    }
-            };
-
+        
             void insert(const T& value) {
 
             }
