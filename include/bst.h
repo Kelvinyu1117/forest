@@ -63,6 +63,7 @@ public:
         auto parent = _curr->_parent;
         while (parent && _curr == parent->_left) {
           _curr = parent;
+          parent = _curr->_parent;
         }
 
         if (_curr)
@@ -79,6 +80,7 @@ public:
         auto parent = _curr->_parent;
         while (parent && _curr == parent->_right) {
           _curr = parent;
+          parent = _curr->_parent;
         }
         _curr = parent;
       } else {
@@ -114,7 +116,7 @@ public:
     return Iterator{it};
   }
 
-  constexpr auto begin() -> Iterator { return Iterator{_root}; }
+  constexpr auto begin() -> Iterator { return Iterator{LinkedBinarySearchTreeNode<T>::min_node(_root)}; }
   constexpr auto end() -> Iterator { return Iterator{nullptr}; }
 
 private:
@@ -143,8 +145,10 @@ private:
       bool is_less_than = _cmp(node->_value, parent->_value);
       if (is_less_than) {
         parent->_left = node;
+        node->_parent = parent;
       } else {
         parent->_right = node;
+        node->_parent = parent;
       }
 
       return {Iterator{node}, true};
