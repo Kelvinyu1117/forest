@@ -51,7 +51,8 @@ private:
   }
 
 public:
-  constexpr LinkedBinarySearchTree() : _root{}, _cmp(Compare()), _allocator() {}
+  constexpr LinkedBinarySearchTree()
+      : _root{}, _cmp(Compare()), _allocator(), _size(0) {}
 
   struct Iterator {
     LinkedBinarySearchTreeNode<T> *_curr;
@@ -104,20 +105,29 @@ public:
   }
 
   constexpr auto find(const T &target) -> Iterator {
-    LinkedBinarySearchTree *it = _root;
+    auto *it = _root;
 
-    while (it && it->_value != target) {
-      if (_cmp(it->_value, target))
+    while (it) {
+      if (_cmp(target, it->_value)) {
         it = it->_left;
-      else
+      } else if (_cmp(it->_value, target)) {
         it = it->_right;
+      } else {
+        return Iterator{it};
+      }
     }
 
-    return Iterator{it};
+    return Iterator{nullptr};
   }
 
-  constexpr auto begin() -> Iterator { return Iterator{LinkedBinarySearchTreeNode<T>::min_node(_root)}; }
+  constexpr auto begin() -> Iterator {
+    return Iterator{LinkedBinarySearchTreeNode<T>::min_node(_root)};
+  }
   constexpr auto end() -> Iterator { return Iterator{nullptr}; }
+
+  constexpr bool empty() const { return _root == nullptr; }
+
+  constexpr size_t size() const { return _size; }
 
 private:
   constexpr auto insert_impl(LinkedBinarySearchTreeNode<T> *node)
@@ -146,9 +156,11 @@ private:
       if (is_less_than) {
         parent->_left = node;
         node->_parent = parent;
+        _size++;
       } else {
         parent->_right = node;
         node->_parent = parent;
+        _size++;
       }
 
       return {Iterator{node}, true};
@@ -159,5 +171,6 @@ private:
   LinkedBinarySearchTreeNode<T> *_root;
   Compare _cmp;
   Alloc _allocator;
+  size_t _size;
 };
 } // namespace forest
